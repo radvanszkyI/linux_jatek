@@ -37,7 +37,7 @@ draw() { # X, Y, char, bg-color
 	fi
 } # pl.: draw 3 20 "-" $green
 
-#ok nincsen benne a szoköz
+#ok 
 load() {
 	i=0
     	while IFS= read -r line
@@ -50,7 +50,7 @@ load() {
     	done < "$input"
 }
 
-#ok
+#ok todo: ME + Monsters
 print_matrix() {
 	for ((i=0;i<N;i++))
 	do
@@ -62,6 +62,7 @@ print_matrix() {
 		    case $c in
 		        '#') draw $x $y '  ' $WALL;;
 		        ' ') draw $x $y '  ' $AIR;;
+		        'H') draw $x $y $UserName $blue;;
 		    esac
 	    	    
 	    done
@@ -80,10 +81,21 @@ getUserName() {
 }
 
 
-#ok
+getUserName
 load	
+matrix[1,1]='H'
+
+#todo generateEnemies
+# move hero
+# menu save/load/quit/change name/change color
+
 print_matrix 
-draw 9 22 "ME" $blue
+
+
+
+
+
+
 
 
 
