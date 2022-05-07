@@ -1,16 +1,22 @@
 #!/bin/bash
 
-border_color="\e[30;43m"
+WALL="\e[30;43m"
+AIR="\e[0m"
+#WALL="\e[30;100m"
+#AIR="\e[30;103m"
+
+
 green="\e[32;42m"
 blue="\e[0;44m"
 text_color="\e[31;43m"
 no_color="\e[0m"
-WALL='\u253C'
 
+UserName="ME"
 declare -A matrix
 input="./map.txt"
 N=16
 M=24
+
 
 #ok
 draw() { # X, Y, char, bg-color 
@@ -31,16 +37,15 @@ draw() { # X, Y, char, bg-color
 	fi
 } # pl.: draw 3 20 "-" $green
 
-#ok
+#ok nincsen benne a szoköz
 load() {
 	i=0
     	while IFS= read -r line
     	do
     	    #echo $i
     	    for ((j=0;j<$M;j++)) do
-    	        matrix[$i,$j]=${line:$j:1}  
-    	        #echo ${line:$j:1} 
-    	    done 
+    	        matrix[$i,$j]=${line:$j:1}
+    	    done
     	    ((i=i+1))
     	done < "$input"
 }
@@ -54,24 +59,33 @@ print_matrix() {
 	    	    ((x=8+i))
 	    	    ((y=20+j*2))
 	    	    c=${matrix[$i,$j]}
-	    	    #echo -n "$x $y $c "
+		    case $c in
+		        '#') draw $x $y '  ' $WALL;;
+		        ' ') draw $x $y '  ' $AIR;;
+		    esac
 	    	    
-		    draw $x $y $c$c $border_color
 	    done
 	    echo
 	done
 	
 }
 
+getUserName() {
+	read -p "monogram (two letter): " name
+	case ${#name} in
+	 0) ;;
+	 1) UserName=$name;;
+	 *) UserName=${name:0:2};;
+	esac
+}
 
-#type here your 2 letter monogram or just press enter(m="ME")
 
 #ok
 load	
-#echo ${matrix[1,2]} # ez oké
-
 print_matrix 
 draw 9 22 "ME" $blue
 
-#echo ${matrix[0,0]}
+
+
+
 draw 30 1 "\n" $no_color #end of game
