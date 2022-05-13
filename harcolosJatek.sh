@@ -22,7 +22,7 @@ source harcolosJatekFunctions.sh
 
 
 #ok todo: ME + Monsters
-print_matrix() {
+print_map() {
 	for ((i=0;i<N;i++))
 	do
 	    for ((j=0;j<M;j++))
@@ -32,8 +32,7 @@ print_matrix() {
 	    	    c=${matrix[$i,$j]}
 		    case $c in
 		        '#') draw $x $y '  ' $WALL;;
-		        ' ') draw $x $y '  ' $AIR;;
-		        'H') draw $x $y $UserName $blue;;
+		        *) draw $x $y '  ' $AIR;;
 		    esac
 	    	    
 	    done
@@ -41,26 +40,20 @@ print_matrix() {
 	done
 	
 }
+#  'H') draw $x $y $UserName $blue;;
 
-getUserName() {
-	read -p "monogram (two letter): " name
-	case ${#name} in
-	 0) ;;
-	 1) UserName=$name;;
-	 *) UserName=${name:0:2};;
-	esac
-}
 
 
 getUserName
 load	
 matrix[1,1]='H'
 
+#update_entities
 #todo generateEnemies
 # move hero //temp-ben müködő billenytű elkapás
 # menu save/load/quit/change name/change color
 
-print_matrix 
+print_map 
 
 
 

@@ -7,31 +7,20 @@ source harcolosJatekFunctions.sh
 
 
 declare -i alive 
-alive=0
+alive=1
+
 # signals
 SIG_UP=USR1
 SIG_RIGHT=USR2
 SIG_DOWN=URG
 SIG_LEFT=IO
+
 SIG_QUIT=WINCH
 SIG_DEAD=HUP
 
-# direction arrays: 0=up, 1=right, 2=down, 3=left
-move_r=([0]=-1 [1]=0 [2]=1 [3]=0)
-move_c=([0]=0 [1]=1 [2]=0 [3]=-1)
+SIG_FIGHT=ABRT
 
 
-
-move_and_draw() {
-    echo -ne "\e[${1};${2}H$3"
-}
-
-
-
-is_dead() {
-    
-    return 1
-}
 
 
 getchar() {
@@ -51,23 +40,32 @@ getchar() {
                   ;;
             [aA]) kill -$SIG_LEFT $game_pid
                   ;;
+            [fF]) kill -$SIG_FIGHT $game_pid
+                  ;;
        esac
     done
 }
 game_loop() {
-    xc=10
-    trap "xc=1;" $SIG_UP
-    trap "xc=2;" $SIG_RIGHT
-    trap "xc=3;" $SIG_DOWN
-    trap "xc=4;" $SIG_LEFT
+    action=none
+    trap "action=move_up;" $SIG_UP
+    trap "action=move_right;" $SIG_RIGHT
+    trap "action=move_down;" $SIG_DOWN
+    trap "action=move_left;" $SIG_LEFT
+    trap "action=fight;" $SIG_FIGHT
     trap "exit 1;" $SIG_QUIT
-    while [ "$alive" -eq 0 ]; do
-        draw $xc $xc 'c' "\e[30;43m"
-        echo "a"
+    while [ "$alive" -eq 1 ]; do
+    	case "$action" in
+    	    *move*) #move $action
+    	    	  action=none;;
+    	    fight) echo fight
+    	    	  action=none;;
+    	esac
+    	
         sleep 0.03
     done
     
-    echo -e "${text_color}Oh, No! You 0xdead$no_color"
+    #ha nem él kilép a ciklusból
+    echo -e "Oh, No! You 0xdead"
     # signals the input loop that the snake is dead
     kill -$SIG_DEAD $$
 }

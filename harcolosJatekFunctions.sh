@@ -32,3 +32,11 @@ load() {
     	done < "$input"
 }
 
+getUserName() {
+	read -p "monogram (two letter): " name
+	case ${#name} in
+	 0) ;;
+	 1) UserName=$name;;
+	 *) UserName=${name:0:2};;
+	esac
+}
