@@ -24,7 +24,6 @@ load() {
 	i=0
     	while IFS= read -r line
     	do
-    	    #echo $i
     	    for ((j=0;j<$M;j++)) do
     	        matrix[$i,$j]=${line:$j:1}
     	    done
@@ -47,8 +46,8 @@ print_map() {
 	do
 	    for ((j=0;j<M;j++))
 	    do
-	    	    ((x=6+i))
-	    	    ((y=20+j*2))
+	    	    ((x=offsetX+i))
+	    	    ((y=offsetY+j*2))
 	    	    c=${matrix[$i,$j]}
 		    case $c in
 		        '#') draw $x $y '  ' $WALL;;
@@ -56,18 +55,18 @@ print_map() {
 		    esac
 	    	    
 	    done
-	    echo
 	done
 	
 }
 
 update_entity_locations() {
+
 	for ((i=0;i<N;i++))
 	do
 	    for ((j=0;j<M;j++))
 	    do
-	    	    ((x=6+i))
-	    	    ((y=20+j*2))
+	    	    ((x=offsetX+i))
+	    	    ((y=offsetY+j*2))
 	    	    c=${matrix[$i,$j]}
 		    case $c in
 		        'H') draw $x $y $UserName $HERO;;
@@ -76,6 +75,5 @@ update_entity_locations() {
 		    esac
 	    	    
 	    done
-	    echo
 	done
 }
