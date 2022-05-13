@@ -23,44 +23,7 @@ clear
 source harcolosJatekFunctions.sh
 
 
-#ok 
-print_map() {
-	for ((i=0;i<N;i++))
-	do
-	    for ((j=0;j<M;j++))
-	    do
-	    	    ((x=6+i))
-	    	    ((y=20+j*2))
-	    	    c=${matrix[$i,$j]}
-		    case $c in
-		        '#') draw $x $y '  ' $WALL;;
-		        *) draw $x $y '  ' $AIR;;
-		    esac
-	    	    
-	    done
-	    echo
-	done
-	
-}
 
-update_entity_locations() {
-	for ((i=0;i<N;i++))
-	do
-	    for ((j=0;j<M;j++))
-	    do
-	    	    ((x=6+i))
-	    	    ((y=20+j*2))
-	    	    c=${matrix[$i,$j]}
-		    case $c in
-		        'H') draw $x $y $UserName $HERO;;
-		        [1-9]) draw $x $y "M$c" $MONSTER;;
-		        *) ;;
-		    esac
-	    	    
-	    done
-	    echo
-	done
-}
 
 
 
