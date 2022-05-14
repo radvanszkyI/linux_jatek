@@ -77,3 +77,28 @@ update_entity_locations() {
 	    done
 	done
 }
+
+create_entities(){
+	hero_generated=0
+	for ((i=0;i<N;i++))
+	do
+	    for ((j=0;j<M;j++))
+	    do
+	    	    c=${matrix[$i,$j]}
+	    	    if [ "$c" = ' ' ]; then
+	    	    	R=$(($RANDOM%60))
+	    	    	if [ $R -eq 0 ] && [ $hero_generated -eq 0 ]; then
+	    	    	    matrix[$i,$j]='H'
+	    	    	    hero_generated=1
+	    	    	   
+	    	    	elif [ $R -gt 53 ]; then
+	    	    	    matrix[$i,$j]=$(($RANDOM%10))
+	    	    	fi
+	    	    fi
+	    done
+	done
+	#ha nincs hero
+	if [ $hero_generated -eq 0 ]; then
+		matrix[1,1]='H'
+	fi
+}
