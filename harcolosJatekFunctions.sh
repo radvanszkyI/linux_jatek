@@ -19,8 +19,12 @@ draw() { # X, Y, char, bg-color
 } # pl.: draw 3 20 "-" $green
 
 #ok 
-load() {
+load() { # map/game
 
+	file="$map_FILE"
+	if [ "$1" == "game" ]; then
+		file="$game_FILE"
+	fi
 	i=0
     	while IFS= read -r line
     	do
@@ -28,15 +32,27 @@ load() {
     	        matrix[$i,$j]=${line:$j:1}
     	    done
     	    ((i=i+1))
-    	done < "$input"
+    	done < "$file"
+}
+
+save() {
+	game_str="";
+	for ((i=0;i<N;i++))
+    	do
+    	    for ((j=0;j<$M;j++)) do
+    	        game_str+=${matrix[$i,$j]}
+    	    done
+    	    game_str+="\n"
+    	done 
+    	echo -e "${game_str::-2}" > "$game_FILE" #write game_str to file without the last '\n'
 }
 
 getUserName() {
-	read -p "monogram (two letter): " name
+	read -p "type here your monogram (two letter): " name
 	case ${#name} in
 	 0) ;;
 	 1) UserName=$name;;
-	 *) UserName=${name:0:2};;
+	 *) UserName=${name:0:2};; #maximum two character
 	esac
 }
 
@@ -101,4 +117,27 @@ create_entities(){
 	if [ $hero_generated -eq 0 ]; then
 		matrix[1,1]='H'
 	fi
+}
+
+print_menu(){
+
+    draw $((offsetX-3)) $offsetY 	 "Commands:   Q(quit)   K(save)   L(load)    H(help)" $no_color #end of game
+    draw $((offsetX-2)) $offsetY 	 "   Moves:   W(up)     S(down)   D(right)   A(left)" $no_color #end of game
+    draw $offsetX 2 "Name: $UserName\n\n   HP:" $text_yellow_bold 
+    
+
+}
+
+update_lifes(){
+    xk=0;yk=0;
+    for ((i=0;i<life;i++)) do
+    	((xk=offsetX+2+i/5))
+    	((yk=8+i%5*2))
+    	draw $xk $yk "\u2665" $text_yellow 
+    done
+}
+
+message(){
+	draw $((offsetX+N+1)) $offsetY "                                                                            " $no_color
+	draw $((offsetX+N+1)) $offsetY "$1" $no_color 
 }

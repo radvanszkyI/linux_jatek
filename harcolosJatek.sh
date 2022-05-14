@@ -27,54 +27,121 @@ offsetY=20
 
 #global variables
 UserName="ME"
-life=20
+life=4
 declare -A matrix
-input="./map.txt"
+map_FILE="./map.txt"
+game_FILE="./game.txt"
 RANDOM=$$
+loadq=0
+
+# signals
+SIG_UP=USR1
+SIG_RIGHT=USR2
+SIG_DOWN=URG
+SIG_LEFT=IO
+
+SIG_SAVE=ABRT
+SIG_LOAD=BUS
+SIG_QUIT=WINCH
+SIG_DEAD=HUP
 	
 source harcolosJatekFunctions.sh
 
-print_menu(){
 
-    draw $((offsetX-3)) $offsetY "Commands:   Q(quit)   S(save)   L(load)" $no_color #end of game
-    draw $((offsetX-2)) $offsetY "    Move:   W(up)     S(down)   D(right)   A(left)" $no_color #end of game
-    draw $offsetX 2 "Name: $UserName\n\n   HP:" $text_yellow_bold 
-    
 
-}
-
-update_lifes(){
-    xk=0;yk=0;
-    for ((i=0;i<life;i++)) do
-    	((xk=offsetX+2+i/5))
-    	((yk=8+i%5*2))
-    	draw $xk $yk "\u2665" $text_yellow 
-    done
-}
-
+#initialize game
 getUserName
 load	
 print_map
-#matrix[1,1]='H'
-
-
 print_menu
 update_lifes
-
-
-
-
-
-
-
-
-# move hero //temp-ben müködő billenytű elkapás
-# menu save/load/quit/change name/change color
-
-
 create_entities
 update_entity_locations
 
+
+
+move(){
+	case "$action" in
+	    *left) ;; 
+    	    *right) ;; 
+    	    *up) ;; 
+    	    *down) ;; 
+	esac
+}
+
+
+
+
+getchar() {
+    trap "" SIGINT SIGQUIT
+    trap "return;" $SIG_DEAD
+    while true; do
+        read -s -n 1 key
+        case "$key" in
+            [qQ]) kill -$SIG_QUIT $game_pid
+                  return
+                  ;;
+            [wW]) kill -$SIG_UP $game_pid
+                  ;;
+            [dD]) kill -$SIG_RIGHT $game_pid
+                  ;;
+            [sS]) kill -$SIG_DOWN $game_pid
+                  ;;
+            [aA]) kill -$SIG_LEFT $game_pid
+                  ;;
+            [kK]) kill -$SIG_SAVE $game_pid
+                  ;;
+            [lL]) kill -$SIG_LOAD $game_pid
+                  ;;
+            [yY]) if [ $loadq -eq 1 ]; then 
+            		load game
+            		loadq=0
+                  fi
+                  ;;
+            [nN]) if [ $loadq -eq 1 ]; then 
+            		message " "
+            		loadq=0
+                  fi
+                  ;;
+       esac
+    done
+}
+game_loop() {
+    action=none
+    trap "action=move_up;" $SIG_UP
+    trap "action=move_right;" $SIG_RIGHT
+    trap "action=move_down;" $SIG_DOWN
+    trap "action=move_left;" $SIG_LEFT
+    trap "action=save;" $SIG_SAVE
+    trap "action=load;" $SIG_LOAD
+    trap "exit 1;" $SIG_QUIT
+    while [ "$life" -gt 1 ]; do
+    	case "$action" in
+    	    *move*) move "$action"
+    	    	  action=none;;
+    	    save) save
+    	    	  action=none;;
+    	    load) 
+    	          message "Are you sure?[Y/N] (current game datas will be lost)"
+    	    	  loadq=1
+    	    	  action=none;;
+    	esac
+# move hero //temp-ben müködő billenytű elkapás
+# S -> save
+# L -> (biztos?jelenlegi elveszik) load game
+        sleep 0.03
+    done
+    
+    #if no life then stop the game
+    echo -e "Oh, No! You 0xdead"
+    
+    # signals the input loop that the hero is dead
+    kill -$SIG_DEAD $$
+}
+game_loop &
+game_pid=$!
+getchar
+exit 0
 
 
 
