@@ -1,7 +1,7 @@
 # linux beadandó - játék
 
 ### Játék indítása:<br/>
-A játék Linux operációs rendszeren indítható a "harcolosJatek.sh" szkripttel.<br/>
+A játék Linux operációs rendszeren indítható, a **"harcolosJatek.sh"** szkripttel.<br/>
 Azonban az összes többi fájl is szükséges. A megfelelő működéshez mindent másoljon ugyan abba a mappába. A játék angolul kommunikál a felhasználóval.<br/>
 A harcolosJatek.sh indítása után begépelheti a monogramját vagy csak egyszerűen nyomjon ENTER-t.
 Ezután elindul maga a játék.
