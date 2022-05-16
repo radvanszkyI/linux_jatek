@@ -1,0 +1,12 @@
+You are the hero of this game and your mission is to clear this map
+as fast as you can.
+You can move 4 direction with WASD keys
+If you are close enough to a monster(red square), the stronger one wins
+At the begin you have 3 heal points(HP) but if you defeat monsters you will get stroger
+You can use the commands simply by pressing the proper key. 
+You can see all the commands and their keys above.
+Commands meaning: 
+-Save: you can save your current status (then the previously saved game will be overwritten)
+-Load: you can load the previously saved game (then the this game will be overwritten)
+-Quit: close the game (but you can save if you want)
+(press H to quit from help)

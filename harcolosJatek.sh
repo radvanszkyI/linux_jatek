@@ -1,21 +1,6 @@
 #!/bin/bash
 clear
 
-#help
-helptext="
-You are the hero of this game and your mission is to clear this map
-as fast as you can.
-You can move 4 direction with WASD keys
-If you are close enough to a monster(red square), the stronger one wins
-At the begin you have 3 heal points(HP) but if you defeat monsters you will get stroger
-You can see all the commands above.
-Comands: 
--Save: you can save your current status (then the previously saved game will be overwritten)
--Load: you can load the previously saved game (then the this game will be overwritten)
--Quit: close the game (but you can save if you want)
-(press H to quit from help)
-"
-
 #color properties
 #WALL="\e[30;100m"
 #AIR="\e[30;103m"
@@ -49,6 +34,7 @@ Hy=0
 declare -A matrix
 map_FILE="./map.txt"
 game_FILE="./game.txt"
+help_FILE="./help.txt"
 RANDOM=$$
 
 helpOn=0
@@ -133,9 +119,17 @@ game_loop() {
     	case "$action" in
     	    *move*) qVarClear
     	    	  message " "
-    	    	  move "$action"
-    	    	  update_userstat
-    	    	  update_entity_locations
+    	    	  if [ $helpOn -eq 0 ] ; then
+	    	    	  move "$action"
+	    	    	  update_userstat
+	    	    	  # update_entity_locations # commented out for less cursor flecker
+	    	    	  map_cleared # check if the hero cleared the map
+	    	    	  if [ $? -eq 1 ]; then 
+	    	    	  	message "You are the winner! The truth always stronger than the evil side."
+	    	    	  	kill -$SIG_DEAD $$
+	    	    	  	exit 0
+	    	    	  fi
+	    	  fi
     	    	  action=none
     	    	  ;;
     	    "save") qVarClear
@@ -147,6 +141,10 @@ game_loop() {
     	    	  	qVarClear
     	    	  	message "game saved"; 
     	          fi   
+    	    	  action=none
+    	    	  ;;
+    	    "help") qVarClear
+    	    	  game_help   
     	    	  action=none
     	    	  ;;
     	    "load") qVarClear
@@ -197,8 +195,7 @@ game_loop() {
     	esac
     	sleep 0.03
     done
-    
-    # signals the getchar loop that the hero is dead
+    message "You lost (The hero was killed by strong monster(s))"
     kill -$SIG_DEAD $$
 }
 game_loop &

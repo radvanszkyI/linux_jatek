@@ -99,8 +99,10 @@ update_entity_locations() {
 		    case $c in
 		        'H') draw $x $y $UserName $HERO ; Hx=$i ; Hy=$j ;;
 		        [1-9]) draw $x $y "M$c" $MONSTER;;
+		        
+		        
 		        '#') ;;
-		        *) draw $x $y '  ' $AIR;;
+		        *) draw $x $y '  ' $AIR ;; 
 		    esac
 	    	    
 	    done
@@ -143,19 +145,38 @@ print_menu(){
 
 }
 game_help(){
+	
 	if [ $helpOn -eq 0 ] ; then
 	    clear
 	    print_menu noUserInformation
-	    cat help.txt
+	    draw $offsetX 0 "" $no_color
+	    cat $help_FILE
+	    helpOn=1
+    	else
+    	    clear
+	    print_menu ; update_userstat
+	    print_map  ; update_entity_locations
+	    helpOn=0
     	fi
 	
 }
 
 update_userstat(){
     #moves
+    draw $((offsetX+2)) 9 "     " $no_color #remove false number
     draw $((offsetX+2)) 9 "$moves" $text_yellow_bold 
-    #hearts
+    
     xk=0;yk=0;heartsInRow=4
+    #remove false hearts
+    for ((i=0;i<40;i++)) do
+    	((xk=offsetX+4+i/heartsInRow))
+    	((yk=9+i%heartsInRow*2))
+    	draw $xk $yk " " $no_color 
+    done
+    draw $((offsetX+4)) 9 "0" $text_yellow 
+    
+    #drow new hearts
+    xk=0;yk=0
     for ((i=0;i<life;i++)) do
     	((xk=offsetX+4+i/heartsInRow))
     	((yk=9+i%heartsInRow*2))
@@ -168,8 +189,24 @@ qVarClear(){
 	saveq=0
 	loadq=0
 }
+map_cleared() {
+
+	for ((i=0;i<N;i++))
+	do
+	    for ((j=0;j<M;j++))
+	    do
+	    	    ((x=offsetX+i))
+	    	    ((y=offsetY+j*2))
+	    	    c=${matrix[$i,$j]}
+		    case $c in 
+		    	[1-9]) return 0 ;;
+		    esac
+	    done
+	done
+	return 1 
+}
 move(){
-	Nx=$Hx ; Ny=$Hy ; slife=$life
+	Nx=$Hx ; Ny=$Hy ; slife=$life ; monst=0 #number of killed monsters
 	case "$1" in
 	    *left) ((Ny--));; 
     	    *right)((Ny++)) ;; 
@@ -178,25 +215,33 @@ move(){
 	esac
 	c=${matrix[$Nx,$Ny]}
 	if [ "$c" != "#" ] ; then #if not wall then move
+		case $c in [1-9]) ((life-=$c)) ; matrix[$((Nx)),$Ny]=" " ; ((monst++)) ;; esac #possible in the first step
 		matrix[$Nx,$Ny]="H"
 		matrix[$Hx,$Hy]=" "
+		draw $((offsetX+Hx)) $((offsetY+Hy*2)) '  ' $AIR
 		Hx=$Nx ; Hy=$Ny
+		draw $((offsetX+Hx)) $((offsetY+Hy*2)) $UserName $HERO
 		((moves++))
 		
 		#if monster then fight
-		monst=0
 		c=${matrix[$((Nx+1)),$Ny]}
-		case $c in [1-9]) ((life-=$c)) ; matrix[$((Nx+1)),$Ny]=" " ; ((monst++));; esac
+		case $c in [1-9]) ((life-=$c)) ; matrix[$((Nx+1)),$Ny]=" " ; ((monst++)) 
+		  draw $((offsetX+Nx+1)) $((offsetY+Ny*2)) '  ' $AIR ;; esac
 		c=${matrix[$((Nx-1)),$Ny]}
-		case $c in [1-9]) ((life-=$c)) ; matrix[$((Nx-1)),$Ny]=" " ; ((monst++));; esac
+		case $c in [1-9]) ((life-=$c)) ; matrix[$((Nx-1)),$Ny]=" " ; ((monst++)) 
+		  draw $((offsetX+Nx-1)) $((offsetY+Ny*2)) '  ' $AIR ;; esac
 		c=${matrix[$Nx,$((Ny+1))]}
-		case $c in [1-9]) ((life-=$c)) ; matrix[$Nx,$((Ny+1))]=" " ; ((monst++));; esac
+		case $c in [1-9]) ((life-=$c)) ; matrix[$Nx,$((Ny+1))]=" " ; ((monst++)) 
+		  draw $((offsetX+Nx)) $((offsetY+(Ny+1)*2)) '  ' $AIR ;; esac
 		c=${matrix[$Nx,$((Ny-1))]}
-		case $c in [1-9]) ((life-=$c)) ; matrix[$Nx,$((Ny-1))]=" " ; ((monst++));; esac
+		case $c in [1-9]) ((life-=$c)) ; matrix[$Nx,$((Ny-1))]=" " ; ((monst++)) 
+		  draw $((offsetX+Nx)) $((offsetY+(Ny-1)*2)) '  ' $AIR ;; esac
 	fi
 	#if not died then level up
 	if [ $life -gt -1 ] ; then
 		((life=slife+monst))
+	else 
+		life=0
 	fi
 }
 
