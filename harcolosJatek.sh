@@ -44,6 +44,8 @@ offsetY=20
 UserName="ME"
 life=3
 moves=0
+Hx=0
+Hy=0
 declare -A matrix
 map_FILE="./map.txt"
 game_FILE="./game.txt"
@@ -133,6 +135,7 @@ game_loop() {
     	    	  message " "
     	    	  move "$action"
     	    	  update_userstat
+    	    	  update_entity_locations
     	    	  action=none
     	    	  ;;
     	    "save") qVarClear

@@ -16,7 +16,12 @@ draw() { # X, Y, char, bg-color
 	    # karakter="$4$3$no_color"
 	    echo -ne "\e[${1};${2}H$4$3$no_color"
 	fi
-} # pl.: draw 3 20 "-" $green
+} 
+
+message(){
+	draw $((offsetX+N+1)) 2 "                                                                            " $no_color
+	draw $((offsetX+N+1)) 2 "$1" $no_color 
+}
 
 #ok 
 load() { # map/game
@@ -90,7 +95,7 @@ update_entity_locations() {
 	    	    ((y=offsetY+j*2))
 	    	    c=${matrix[$i,$j]}
 		    case $c in
-		        'H') draw $x $y $UserName $HERO;;
+		        'H') draw $x $y $UserName $HERO ; Hx=$i ; Hy=$j ;;
 		        [1-9]) draw $x $y "M$c" $MONSTER;;
 		        '#') ;;
 		        *) draw $x $y '  ' $AIR;;
@@ -98,6 +103,7 @@ update_entity_locations() {
 	    	    
 	    done
 	done
+	message " " 
 }
 
 create_entities(){
@@ -112,7 +118,7 @@ create_entities(){
 	    	    	if [ $R -eq 0 ] && [ $hero_generated -eq 0 ]; then
 	    	    	    matrix[$i,$j]='H'
 	    	    	    hero_generated=1
-	    	    	   
+	    	    	    Hx=$i ; Hy=$j
 	    	    	elif [ $R -gt 53 ]; then
 	    	    	    matrix[$i,$j]=$((($RANDOM%9+1)/($RANDOM%2+1)))
 	    	    	fi
@@ -130,7 +136,7 @@ print_menu(){
     draw $((offsetX-3)) $offsetY 	 "Commands:   Q(quit)   K(save)   L(load)    H(help)" $no_color #end of game
     draw $((offsetX-2)) $offsetY 	 "   Moves:   W(up)     S(down)   D(right)   A(left)" $no_color #end of game
     if [ "$1" != "noUserInformation" ] ; then
-    	draw $offsetX 2 "Name: $UserName\n\n   HP:" $text_yellow_bold 
+    	draw $offsetX 3 "Name: $UserName\n\n Moves:\n\n    HP:" $text_yellow_bold 
     fi
 
 }
@@ -143,16 +149,36 @@ game_help(){
 	
 }
 
-update_lifes(){
+update_userstat(){
+    #moves
+    draw $((offsetX+2)) 9 "$moves" $text_yellow_bold 
+    #hearts
     xk=0;yk=0;heartsInRow=4
     for ((i=0;i<life;i++)) do
-    	((xk=offsetX+2+i/heartsInRow))
-    	((yk=8+i%heartsInRow*2))
+    	((xk=offsetX+4+i/heartsInRow))
+    	((yk=9+i%heartsInRow*2))
     	draw $xk $yk "\u2665" $text_yellow 
     done
+    message " "
+}
+qVarClear(){ 
+	loadq=0
+	saveq=0
+	loadq=0
+}
+move(){
+	Nx=$Hx ; Ny=$Hy
+	case "$1" in
+	    *left) ((Ny--));; 
+    	    *right)((Ny++)) ;; 
+    	    *up) ((Nx--));; 
+    	    *down) ((Nx++));; 
+	esac
+	if [ "$matrix[$Nx,$Ny]" != "#" ] ; then #if not wall then move
+		matrix[$Nx,$Ny]="H"
+		matrix[$Hx,$Hy]=" "
+		((moves++))
+		#if monster then fight
+	fi
 }
 
-message(){
-	draw $((offsetX+N+1)) 2 "                                                                            " $no_color
-	draw $((offsetX+N+1)) 2 "$1" $no_color 
-}
