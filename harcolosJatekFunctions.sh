@@ -169,19 +169,34 @@ qVarClear(){
 	loadq=0
 }
 move(){
-	Nx=$Hx ; Ny=$Hy
+	Nx=$Hx ; Ny=$Hy ; slife=$life
 	case "$1" in
 	    *left) ((Ny--));; 
     	    *right)((Ny++)) ;; 
     	    *up) ((Nx--));; 
     	    *down) ((Nx++));; 
 	esac
-	if [ "$matrix[$Nx,$Ny]" != "#" ] ; then #if not wall then move
+	c=${matrix[$Nx,$Ny]}
+	if [ "$c" != "#" ] ; then #if not wall then move
 		matrix[$Nx,$Ny]="H"
 		matrix[$Hx,$Hy]=" "
+		Hx=$Nx ; Hy=$Ny
 		((moves++))
-		#if monster then fight
 		
+		#if monster then fight
+		monst=0
+		c=${matrix[$((Nx+1)),$Ny]}
+		case $c in [1-9]) ((life-=$c)) ; matrix[$((Nx+1)),$Ny]=" " ; ((monst++));; esac
+		c=${matrix[$((Nx-1)),$Ny]}
+		case $c in [1-9]) ((life-=$c)) ; matrix[$((Nx-1)),$Ny]=" " ; ((monst++));; esac
+		c=${matrix[$Nx,$((Ny+1))]}
+		case $c in [1-9]) ((life-=$c)) ; matrix[$Nx,$((Ny+1))]=" " ; ((monst++));; esac
+		c=${matrix[$Nx,$((Ny-1))]}
+		case $c in [1-9]) ((life-=$c)) ; matrix[$Nx,$((Ny-1))]=" " ; ((monst++));; esac
+	fi
+	#if not died then level up
+	if [ $life -gt -1 ] ; then
+		((life=slife+monst))
 	fi
 }
 
