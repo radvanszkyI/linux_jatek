@@ -1,20 +1,13 @@
 #!/bin/bash
 clear
 
-#color properties
-#WALL="\e[30;100m"
-#AIR="\e[30;103m"
 WALL="\e[30;43m"
 AIR="\e[0m"
 HERO="\e[0;44m" #blue
 MONSTER="\e[0;41m" #red
 
-red="\e[0;41m"
-green="\e[0;42m"
-blue="\e[0;44m"
 text_yellow_bold="\033[1;33m"
 text_yellow="\033[0;33m"
-text_red="\033[0;31m"
 no_color="\e[0m"
 
 

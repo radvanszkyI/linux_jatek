@@ -56,7 +56,7 @@ save() {
     	    done
     	    game_str+="\n"
     	done 
-    	echo -e "${game_str}$life\n$moves" > "$game_FILE" #write game_str to file without the last '\n'
+    	echo -e "${game_str}$life\n$moves" > "$game_FILE" 
 }
 
 getUserName() {
@@ -100,7 +100,6 @@ update_entity_locations() {
 		        'H') draw $x $y $UserName $HERO ; Hx=$i ; Hy=$j ;;
 		        [1-9]) draw $x $y "M$c" $MONSTER;;
 		        
-		        
 		        '#') ;;
 		        *) draw $x $y '  ' $AIR ;; 
 		    esac
@@ -137,8 +136,8 @@ create_entities(){
 
 print_menu(){
 
-    draw $((offsetX-3)) $offsetY 	 "Commands:   Q(quit)   K(save)   L(load)    H(help)" $no_color #end of game
-    draw $((offsetX-2)) $offsetY 	 "   Moves:   W(up)     S(down)   D(right)   A(left)" $no_color #end of game
+    draw $((offsetX-3)) $offsetY 	 "Commands:   Q(quit)   K(save)   L(load)    H(help)" $no_color 
+    draw $((offsetX-2)) $offsetY 	 "   Moves:   W(up)     S(down)   D(right)   A(left)" $no_color 
     if [ "$1" != "noUserInformation" ] ; then
     	draw $offsetX 3 "Name: $UserName\n\n Moves:\n\n    HP:" $text_yellow_bold 
     fi
@@ -206,7 +205,8 @@ map_cleared() {
 	return 1 
 }
 move(){
-	Nx=$Hx ; Ny=$Hy ; slife=$life ; monst=0 #number of killed monsters
+	Nx=$Hx ; Ny=$Hy ; slife=$life ; 
+	monst=0 #number of killed monsters
 	case "$1" in
 	    *left) ((Ny--));; 
     	    *right)((Ny++)) ;; 
