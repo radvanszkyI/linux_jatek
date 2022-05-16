@@ -23,14 +23,19 @@ load() { # map/game
 
 	file="$map_FILE"
 	if [ "$1" == "game" ]; then
+		declare -gA matrix
 		file="$game_FILE"
 	fi
 	i=0
     	while IFS= read -r line
     	do
-    	    for ((j=0;j<$M;j++)) do
-    	        matrix[$i,$j]=${line:$j:1}
-    	    done
+    	    if [ $i -eq $N ] ; then
+    	    	life=$line
+    	    else
+	    	for ((j=0;j<$M;j++)) do
+	    	    matrix[$i,$j]=${line:$j:1}
+	    	done
+    	    fi
     	    ((i=i+1))
     	done < "$file"
 }
@@ -44,7 +49,7 @@ save() {
     	    done
     	    game_str+="\n"
     	done 
-    	echo -e "${game_str::-2}" > "$game_FILE" #write game_str to file without the last '\n'
+    	echo -e "${game_str}$life" > "$game_FILE" #write game_str to file without the last '\n'
 }
 
 getUserName() {
@@ -87,7 +92,8 @@ update_entity_locations() {
 		    case $c in
 		        'H') draw $x $y $UserName $HERO;;
 		        [1-9]) draw $x $y "M$c" $MONSTER;;
-		        *) ;;
+		        '#') ;;
+		        *) draw $x $y '  ' $AIR;;
 		    esac
 	    	    
 	    done
@@ -108,7 +114,7 @@ create_entities(){
 	    	    	    hero_generated=1
 	    	    	   
 	    	    	elif [ $R -gt 53 ]; then
-	    	    	    matrix[$i,$j]=$(($RANDOM%10))
+	    	    	    matrix[$i,$j]=$((($RANDOM%9+1)/($RANDOM%2+1)))
 	    	    	fi
 	    	    fi
 	    done
@@ -123,21 +129,30 @@ print_menu(){
 
     draw $((offsetX-3)) $offsetY 	 "Commands:   Q(quit)   K(save)   L(load)    H(help)" $no_color #end of game
     draw $((offsetX-2)) $offsetY 	 "   Moves:   W(up)     S(down)   D(right)   A(left)" $no_color #end of game
-    draw $offsetX 2 "Name: $UserName\n\n   HP:" $text_yellow_bold 
-    
+    if [ "$1" != "noUserInformation" ] ; then
+    	draw $offsetX 2 "Name: $UserName\n\n   HP:" $text_yellow_bold 
+    fi
 
+}
+game_help(){
+	if [ $helpOn -eq 0 ] ; then
+	    clear
+	    print_menu noUserInformation
+	    cat help.txt
+    	fi
+	
 }
 
 update_lifes(){
-    xk=0;yk=0;
+    xk=0;yk=0;heartsInRow=4
     for ((i=0;i<life;i++)) do
-    	((xk=offsetX+2+i/5))
-    	((yk=8+i%5*2))
+    	((xk=offsetX+2+i/heartsInRow))
+    	((yk=8+i%heartsInRow*2))
     	draw $xk $yk "\u2665" $text_yellow 
     done
 }
 
 message(){
-	draw $((offsetX+N+1)) $offsetY "                                                                            " $no_color
-	draw $((offsetX+N+1)) $offsetY "$1" $no_color 
+	draw $((offsetX+N+1)) 2 "                                                                            " $no_color
+	draw $((offsetX+N+1)) 2 "$1" $no_color 
 }

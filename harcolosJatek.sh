@@ -1,6 +1,21 @@
 #!/bin/bash
 clear
 
+#help
+helptext="
+You are the hero of this game and your mission is to clear this map
+as fast as you can.
+You can move 4 direction with WASD keys
+If you are close enough to a monster(red square), the stronger one wins
+At the begin you have 3 heal points(HP) but if you defeat monsters you will get stroger
+You can see all the commands above.
+Comands: 
+-Save: you can save your current status (then the previously saved game will be overwritten)
+-Load: you can load the previously saved game (then the this game will be overwritten)
+-Quit: close the game instantly (with out saving)
+(press H to quit from help)
+"
+
 #color properties
 #WALL="\e[30;100m"
 #AIR="\e[30;103m"
@@ -23,16 +38,21 @@ N=16
 M=24
 
 offsetX=6
-offsetY=20
+offsetY=18
 
 #global variables
 UserName="ME"
-life=4
+life=3
 declare -A matrix
 map_FILE="./map.txt"
 game_FILE="./game.txt"
 RANDOM=$$
+
+helpOn=0
 loadq=0
+quitq=0
+saveq=0
+
 
 # signals
 SIG_UP=USR1
@@ -44,6 +64,10 @@ SIG_SAVE=ABRT
 SIG_LOAD=BUS
 SIG_QUIT=WINCH
 SIG_DEAD=HUP
+SIG_HELP=CONT
+
+SIG_YES=ALRM
+SIG_NO=FPE
 	
 source harcolosJatekFunctions.sh
 
@@ -51,6 +75,7 @@ source harcolosJatekFunctions.sh
 
 #initialize game
 getUserName
+clear
 load	
 print_map
 print_menu
@@ -58,10 +83,14 @@ update_lifes
 create_entities
 update_entity_locations
 
-
-
+qVarClear(){ 
+	loadq=0
+	saveq=0
+	loadq=0
+}
 move(){
-	case "$action" in
+	
+	case "$1" in
 	    *left) ;; 
     	    *right) ;; 
     	    *up) ;; 
@@ -79,7 +108,6 @@ getchar() {
         read -s -n 1 key
         case "$key" in
             [qQ]) kill -$SIG_QUIT $game_pid
-                  return
                   ;;
             [wW]) kill -$SIG_UP $game_pid
                   ;;
@@ -93,15 +121,11 @@ getchar() {
                   ;;
             [lL]) kill -$SIG_LOAD $game_pid
                   ;;
-            [yY]) if [ $loadq -eq 1 ]; then 
-            		load game
-            		loadq=0
-                  fi
+            [hH]) kill -$SIG_HELP $game_pid
                   ;;
-            [nN]) if [ $loadq -eq 1 ]; then 
-            		message " "
-            		loadq=0
-                  fi
+            [yY]) kill -$SIG_YES $game_pid
+                  ;;
+            [nN]) kill -$SIG_NO $game_pid
                   ;;
        esac
     done
@@ -114,17 +138,73 @@ game_loop() {
     trap "action=move_left;" $SIG_LEFT
     trap "action=save;" $SIG_SAVE
     trap "action=load;" $SIG_LOAD
-    trap "exit 1;" $SIG_QUIT
+    trap "action=help;" $SIG_HELP
+    trap "action=yes;" $SIG_YES
+    trap "action=no;" $SIG_NO
+    trap "action=quit;" $SIG_QUIT
     while [ "$life" -gt 1 ]; do
     	case "$action" in
-    	    *move*) move "$action"
-    	    	  action=none;;
-    	    save) save
-    	    	  action=none;;
-    	    load) 
-    	          message "Are you sure?[Y/N] (current game datas will be lost)"
-    	    	  loadq=1
-    	    	  action=none;;
+    	    *move*) qVarClear
+    	    	  message " "
+    	    	  move "$action"
+    	    	  action=none
+    	    	  ;;
+    	    "save") qVarClear
+    	    	  if [ -f "$game_FILE" ]; then
+    	          	message "Are you sure?[Y/N] (the previously saved game will be overwritten)";
+    	          	saveq=1
+    	          else
+    	          	save
+    	    	  	qVarClear
+    	    	  	message "game saved"; 
+    	          fi   
+    	    	  action=none
+    	    	  ;;
+    	    "load") qVarClear
+    	          if [ -f "$game_FILE" ]; then
+    	          	message "Are you sure?[Y/N] (current game datas will be lost)"; 
+    	          	loadq=1
+    	    	  
+    	          else
+    	          	message "no previous game (you must save the game first)"; 
+    	          fi    	          
+    	    	  action=none
+    	    	  ;;
+    	    "quit") qVarClear
+    	          message "Do you want to save the game before quit [Y/N]";
+    	          quitq=1
+    	          action=none
+    	    	  ;;
+    	    "yes") if [ $loadq -eq 1 ] ; then
+    	    	  	load game
+    	    	  	update_lifes
+    	    	  	update_entity_locations
+    	    	  	qVarClear
+    	    	  	message "game loaded"; 
+    	    	  fi
+    	    	  if [ $saveq -eq 1 ] ; then
+    	    	  	save
+    	    	  	qVarClear
+    	    	  	message "game saved"; 
+    	    	  fi
+    	    	  if [ $quitq -eq 1 ] ; then
+    	    	  	save
+    	    	  	qVarClear
+    	    	  	message "game saved"; 
+    	    	  	kill -$SIG_DEAD $$
+    	    	  	exit 1
+    	    	  fi
+    	    	  action=none
+    	    	  ;;
+    	    "no") 
+    	    	  if [ $quitq -eq 1 ] ; then
+    	    	  	kill -$SIG_DEAD $$
+    	    	  	exit 1
+    	    	  fi
+    	    	  qVarClear
+    	    	  message " "
+    	    	  action=none
+    	    	  ;;
     	esac
 # move hero //temp-ben müködő billenytű elkapás
 # S -> save
@@ -141,13 +221,6 @@ game_loop() {
 game_loop &
 game_pid=$!
 getchar
+draw 30 1 "\n" $no_color #end of game
 exit 0
 
-
-
-
-
-
-
-
-draw 30 1 "\n" $no_color #end of game
