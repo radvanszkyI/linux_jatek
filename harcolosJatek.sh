@@ -12,7 +12,7 @@ You can see all the commands above.
 Comands: 
 -Save: you can save your current status (then the previously saved game will be overwritten)
 -Load: you can load the previously saved game (then the this game will be overwritten)
--Quit: close the game instantly (with out saving)
+-Quit: close the game (but you can save if you want)
 (press H to quit from help)
 "
 
@@ -38,11 +38,12 @@ N=16
 M=24
 
 offsetX=6
-offsetY=18
+offsetY=20
 
 #global variables
 UserName="ME"
 life=3
+moves=0
 declare -A matrix
 map_FILE="./map.txt"
 game_FILE="./game.txt"
@@ -79,25 +80,9 @@ clear
 load	
 print_map
 print_menu
-update_lifes
+update_userstat
 create_entities
 update_entity_locations
-
-qVarClear(){ 
-	loadq=0
-	saveq=0
-	loadq=0
-}
-move(){
-	
-	case "$1" in
-	    *left) ;; 
-    	    *right) ;; 
-    	    *up) ;; 
-    	    *down) ;; 
-	esac
-}
-
 
 
 
@@ -142,11 +127,12 @@ game_loop() {
     trap "action=yes;" $SIG_YES
     trap "action=no;" $SIG_NO
     trap "action=quit;" $SIG_QUIT
-    while [ "$life" -gt 1 ]; do
+    while [ "$life" -gt 0 ]; do
     	case "$action" in
     	    *move*) qVarClear
     	    	  message " "
     	    	  move "$action"
+    	    	  update_userstat
     	    	  action=none
     	    	  ;;
     	    "save") qVarClear
@@ -177,7 +163,7 @@ game_loop() {
     	    	  ;;
     	    "yes") if [ $loadq -eq 1 ] ; then
     	    	  	load game
-    	    	  	update_lifes
+    	    	  	update_userstat
     	    	  	update_entity_locations
     	    	  	qVarClear
     	    	  	message "game loaded"; 
@@ -206,16 +192,10 @@ game_loop() {
     	    	  action=none
     	    	  ;;
     	esac
-# move hero //temp-ben müködő billenytű elkapás
-# S -> save
-# L -> (biztos?jelenlegi elveszik) load game
-        sleep 0.03
+    	sleep 0.03
     done
     
-    #if no life then stop the game
-    echo -e "Oh, No! You 0xdead"
-    
-    # signals the input loop that the hero is dead
+    # signals the getchar loop that the hero is dead
     kill -$SIG_DEAD $$
 }
 game_loop &
