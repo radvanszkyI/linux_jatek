@@ -34,7 +34,9 @@ load() { # map/game
 	i=0
     	while IFS= read -r line
     	do
-    	    if [ $i -eq $N ] ; then
+    	    if [ $i -gt $N ] ; then
+    	    	moves=$line
+    	    elif [ $i -eq $N ] ; then
     	    	life=$line
     	    else
 	    	for ((j=0;j<$M;j++)) do
@@ -54,7 +56,7 @@ save() {
     	    done
     	    game_str+="\n"
     	done 
-    	echo -e "${game_str}$life" > "$game_FILE" #write game_str to file without the last '\n'
+    	echo -e "${game_str}$life\n$moves" > "$game_FILE" #write game_str to file without the last '\n'
 }
 
 getUserName() {
@@ -179,6 +181,7 @@ move(){
 		matrix[$Hx,$Hy]=" "
 		((moves++))
 		#if monster then fight
+		
 	fi
 }
 
