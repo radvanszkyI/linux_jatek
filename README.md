@@ -26,3 +26,5 @@ Az utasítások a következők szerint működnek:<br/>
 **Betöltés:** betölti az előzőekben mentett játék (ha van ilyen) állapotát és felülírja a jelenlegit.<br/>
 **Kilépés:** kilép a játékból, de még van lehetőség menteni is<br/>
 **Súgó:** megjeleníti vagy elrejti a súgót<br/>
+### Kommunikáció a felhasználóval
+A pálya alatt vannak elhelyezve a felhasználó tájékoztatását szolgáló üzenetek, illetve a parancs billentyűk hatása megjelenő, eldöntendő kérdések. Az utóbbiakra Y (igen) és N (nem) billentyűkel lehet válaszolni.
