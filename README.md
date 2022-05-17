@@ -1,18 +1,18 @@
 # linux beadandó - játék
 
 ### Játék indítása:<br/>
-A játék Linux operációs rendszeren indítható, a **"harcolosJatek.sh"** szkripttel.<br/>
-Azonban az összes többi fájl is szükséges. A megfelelő működéshez mindent másoljon ugyan abba a mappába. A játék angolul kommunikál a felhasználóval.<br/>
+A játék Linux operációs rendszereken, parancssorból indítható, a **"harcolosJatek.sh"** szkripttel.<br/>
+Azonban a megfelelő működéshez, a repository-ban található összes többi fájl (kivéve a "README.md") is szükséges. Minden fájlt ugyanabba a mappába helyezzen el. A játék angolul kommunikál a felhasználóval.<br/>
 A harcolosJatek.sh indítása után begépelheti a monogramját vagy csak egyszerűen nyomjon ENTER-t.
 Ezután elindul maga a játék.
 
 ### Játék menete:<br/>
-A játék a sárga (falak színe) színnel jelölt térképen zajlik.<br/>
+A játék a sárga színnel jelölt, téglalap alakú térképen (későbbiekben pálya) zajlik.<br/>
 A monogramként megadott hős kék színnel van jelölve. A hős aktuális adatai a pályától balra jelennek meg. <br/>
-Ezek rendre a következők: Name (a hősmonogramja) Moves (az eddig megtett lépések száma) HP (életerő pontok száma, mely a megjelenő szív karakterek számával egyenlő)<br/>
-A hőst a WASD billentyűkel lehet mozogatni (rendre: fel, balra, le, jobbra) olyan helyekre ahol nincsen fal. (A falak színe sárga.)<br/>
+Ezek rendre a következők: Name (a hős monogramja), Moves (az eddig megtett lépések száma), HP (az életerő pontok száma, mely a megjelenő szív karakterek számával egyenlő)<br/>
+A hőst a WASD billentyűkel lehet mozogatni egy-egy egységnyit, bármely irányba (renred: fel, balra, le, jobbra) olyan helyekre ahol nincsen fal. (A falak színe sárga.)<br/>
 A pályán véletlenszerűen generált szörnyek találhatók melyek piros háttérrel, egy nagy ’M’-el és a rájuk jellemző életerő számmal vannak jelölve.<br/>
-Ha a hős közvetlen közelébe (alatta, felette vagy mellette) szörny kerül, akkor harcra kerül a sor.
+Ha a hős közvetlen közelében (alatta, felette vagy mellette) szörny van, akkor harcra kerül a sor.
 Ez alól kivételt képez a legelső lépés, amikor még el lehet távolodni a szörnyek mellől.<br/>
 A harcban az nyer, akinek nagyobb az életereje. Ha több szörny veszi körbe a hőst, azok életereje összegezve számit.
 Amennyiben a hős alulmarad, az életerőpontok tekintetében, a hős meghal és a játék véget ér. 
