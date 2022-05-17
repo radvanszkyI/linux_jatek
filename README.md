@@ -20,7 +20,7 @@ Azonban ha sikerül életben maradnia, minden legyőzött szörny után, egy plu
 Ha a hős és a szörny életereje megegyezik, a hős nyer, mert ő ügyesebb.<br/>
 Ha a pályán nem maradt több szörny, akkor a játékos nyert és a játék véget ér.<br/><br/>
 ### Utasítások
-A játék alatt, a mozgáshoz használt 4 billentyűn kívül, további **4 utasítás** adható ki melyekhez tartozó billentyű a pálya feletti menüben található (K: mentés, L: betöltés, Q: kilépés, H: súgó).<br/>
+A játék alatt, a mozgáshoz használt 4 billentyűn kívül, további **4 utasítás** adható ki, melyekhez tartozó billentyűk a pálya feletti menüben található (K: mentés, L: betöltés, Q: kilépés, H: súgó).<br/>
 Az utasítások a következők szerint működnek:<br/>
 **Mentés:** elmenti a játék állapotát, de felülírja az előző mentést.<br/>
 **Betöltés:** betölti az előzőekben mentett játék (ha van ilyen) állapotát és felülírja a jelenlegit.<br/>
